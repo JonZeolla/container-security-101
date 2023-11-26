@@ -1,0 +1,71 @@
+---
+name: "CI"
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    branches:
+      - main
+
+env:
+  python_version: "3.12"
+
+defaults:
+  run:
+    shell: 'bash --noprofile --norc -Eeuo pipefail {0}'
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.python_version }}
+      - uses: actions/cache@v3
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-python-${{ env.python_version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+      - name: Install Task
+        uses: arduino/setup-task@v1
+      - name: Initialize the repo
+        run: task -v init
+      - name: Set up QEMU for cross-platform emulation
+        uses: docker/setup-qemu-action@v2
+      - name: Build
+        run: task -v build
+        env:
+          PLATFORM: ${{ matrix.platform }}
+      - name: Test
+        run: task -v test -- debug
+        env:
+          PLATFORM: ${{ matrix.platform }}
+      - name: Generate the SBOMs
+        run: task -v sbom
+        env:
+          PLATFORM: ${{ matrix.platform }}
+      - name: Upload the SBOMs to GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: SBOM
+          path: sbom.*.json
+          if-no-files-found: error
+      - name: Generate vuln scan results
+        run: task -v vulnscan
+        env:
+          PLATFORM: ${{ matrix.platform }}
+      - name: Upload the vuln scan results to GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: Vulns
+          path: vulns.*.json
+          if-no-files-found: error

@@ -1,0 +1,3 @@
+[submodule "lab-resources"]
+	path = lab-resources
+	url = https://github.com/jonzeolla/lab-resources

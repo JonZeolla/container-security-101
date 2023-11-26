@@ -1,0 +1,11 @@
+# Ignore everything
+**
+
+# Except the runtime requirements
+!container-security-101.yml
+!requirements.yml
+!entrypoint.sh
+
+!vars/**
+!ansible/**
+!lab-resources/**

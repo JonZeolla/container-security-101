@@ -1,0 +1,10 @@
+---
+- name: Container Security 101
+  gather_facts: true
+  hosts: all
+  vars_files:
+    - vars/global_vars.yml
+  tasks:
+    - name: Setup Docker
+      ansible.builtin.include_role:
+        name: jonzeolla.labs.docker

@@ -11,32 +11,6 @@ set -o pipefail
 # Don't turn on errexit to ensure we see the logs from failed ansible-playbooks attempts
 #set -o errexit
 
-function valid_ip()
-{
-  local ip=$1
-  local status=1
-
-  # Naive IP validation first
-  if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-    _IFS=$IFS
-    IFS='.'
-
-    # Turn ip into an array
-    ip=($ip)
-    IFS=$_IFS
-
-    # Detailed IP validation
-    [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
-    status=$?
-  fi
-  return $status
-}
-
-if ! valid_ip "${CLIENT_IP:-}"; then
-  echo "CLIENT_IP must be set to a valid IP address; it was ${CLIENT_IP:-not set}"
-  exit 1
-fi
-
 # Setup ansible prereqs
 export KEY_FILE="${HOME}/.ssh/ansible_key"
 export LOG_FILE="${HOME}/logs/entrypoint.log"

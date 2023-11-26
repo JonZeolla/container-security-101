@@ -48,4 +48,5 @@ ENV ANSIBLE_ROLES_PATH="${ANSIBLE_ROLES_PATH}:/etc/app/ansible/roles/"
 COPY container-security-101.yml /etc/app/container-security-101.yml
 COPY vars /etc/app/vars
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY ansible/roles/ /etc/app/ansible/roles/
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

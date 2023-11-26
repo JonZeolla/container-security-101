@@ -8,3 +8,7 @@
     - name: Setup Docker
       ansible.builtin.include_role:
         name: jonzeolla.labs.docker
+
+    - name: Setup the cli tools
+      ansible.builtin.include_role:
+        name: cli-tools

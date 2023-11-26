@@ -1,0 +1,58 @@
+---
+- name: Ensure supported OS
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family in ['Debian', 'RedHat']
+    fail_msg: "This playbook only supports Debian and RedHat based systems."
+  run_once: true
+
+- name: Install prereqs
+  become: true
+  when: ansible_os_family == 'Debian'
+  ansible.builtin.apt:
+    pkg:
+      - ca-certificates
+      - curl
+      - jq
+      - sudo
+    update_cache: true
+    install_recommends: no
+
+- name: Install prereqs
+  become: true
+  when: >
+    ansible_os_family == 'RedHat' and
+    ansible_distribution == 'Amazon' and
+    ansible_distribution_version == '2' and
+    ansible_python_version is ansible.builtin.version('2.7', '<=')
+  ansible.builtin.yum:
+    name:
+      - ca-certificates
+      - curl
+      - jq
+      - sudo
+    state: latest
+
+- name: Install prereqs
+  become: true
+  when: >
+    ansible_os_family == 'RedHat' and
+    ansible_distribution == 'Amazon' and
+    ansible_distribution_version == '2023'
+  ansible.builtin.dnf:
+    name:
+      - ca-certificates
+      - curl
+      - jq
+      - sudo
+    state: latest
+    # Necessary due to curl/curl-minimal. skip_broken wasn't sufficient
+    allowerasing: true
+
+- name: Install jq; custom to Amazon Linux 2 due to it using _very_ old components
+  when: >
+    ansible_distribution == 'Amazon' and
+    ansible_distribution_version == '2'
+  ansible.builtin.command:
+    cmd: yum -y install jq
+  become: true

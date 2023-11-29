@@ -2,16 +2,10 @@
 
 ## Getting Started
 
-First, configure the IP variable with your public IP - to find it, [go here](https://ipv4.icanhazip.com/).
+Run the lab setup container, and you should be good to go!
 
 ```bash
-export CLIENT_IP=X.X.X.X # TODO: Replace this with your IP
-```
-
-Now, run the lab setup container.
-
-```bash
-docker run -e CLIENT_IP -e HOST_USER="${USER}" --network host -v ~/logs:/root/logs -v ~/.ssh:/root/.ssh jonzeolla/labs:container-security-101
+docker run -e HOST_USER="${USER}" --network host -v ~/logs:/root/logs -v ~/.ssh:/root/.ssh jonzeolla/labs:container-security-101
 ```
 
 ## Customizing

@@ -7,7 +7,7 @@
   tasks:
     - name: Setup Docker
       ansible.builtin.include_role:
-        name: jonzeolla.labs.docker
+        name: jonzeolla.labs.docker_compose
 
     - name: Setup the cli tools
       ansible.builtin.include_role:

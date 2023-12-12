@@ -40,8 +40,7 @@ RUN ansible-galaxy collection build /etc/app/lab-resources/ansible/jonzeolla/lab
  # Avoid setting the VERSION env var during get-docker.sh
  && unset VERSION \
  && bash ./get-docker.sh \
- && rm get-docker.sh \
- && mkdir -p "${HOME}/logs"
+ && rm get-docker.sh
 
 ENV ANSIBLE_ROLES_PATH="${ANSIBLE_ROLES_PATH}:/etc/app/ansible/roles/"
 COPY ansible/roles/ /etc/app/ansible/roles/

@@ -32,4 +32,5 @@ fi
 
 # Don't take ~/.ssh/config into account, since we will change it as a part of the playbook
 export ANSIBLE_SSH_ARGS="-F /dev/null"
-ansible-playbook ${ANSIBLE_CUSTOM_ARGS:-} -e 'ansible_python_interpreter=/usr/bin/python3' --inventory localhost, --user "${HOST_USER:-ec2-user}" --private-key="${KEY_FILE}" /etc/app/container-security-101.yml | tee -a "${LOG_FILE}"
+DEFAULT_USER="$(getent passwd 1000 | awk -F: '{print $1}')"
+ansible-playbook ${ANSIBLE_CUSTOM_ARGS:-} -e 'ansible_python_interpreter=/usr/bin/python3' --inventory localhost, --user "${HOST_USER:-${DEFAULT_USER:-ec2-user}}" --private-key="${KEY_FILE}" /etc/app/container-security-101.yml | tee -a "${LOG_FILE}"

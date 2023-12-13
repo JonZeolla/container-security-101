@@ -36,13 +36,12 @@ else
 
   AUTHORIZED_KEYS="${HOST_HOME_DIR}/.ssh/authorized_keys"
   cat "${KEY_FILE}.pub" >> "${AUTHORIZED_KEYS}"
-  echo "Updated ${HOME}/.ssh/AUTHORIZED_KEYS" | tee -a "${LOG_FILE}"
+  echo "Updated ${AUTHORIZED_KEYS}" | tee -a "${LOG_FILE}"
 
   ssh-keyscan localhost 2>/dev/null >> "${KNOWN_HOSTS}"
   echo "Updated ${KNOWN_HOSTS}" | tee -a "${LOG_FILE}"
 fi
 
-# Don't take the host's ~/.ssh/config into account, since we will change it as a part of the playbook
-# Also, use a custom location for the known_hosts file based on how we've mounted the host filesystem
-export ANSIBLE_SSH_ARGS="-F /dev/null -o UserKnownHostsFile=${KNOWN_HOSTS}"
+# Use a custom location for the known_hosts file based on how we've mounted the host filesystem
+export ANSIBLE_SSH_ARGS="-o UserKnownHostsFile=${KNOWN_HOSTS}"
 ansible-playbook ${ANSIBLE_CUSTOM_ARGS:-} -e 'ansible_python_interpreter=/usr/bin/python3' --inventory localhost, --user "${HOST_USER}" --private-key="${KEY_FILE}" /etc/app/container-security-101.yml | tee -a "${LOG_FILE}"

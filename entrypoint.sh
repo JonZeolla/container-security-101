@@ -45,4 +45,4 @@ fi
 
 # Use a custom location for the known_hosts file based on how we've mounted the host filesystem
 export ANSIBLE_SSH_ARGS="-o UserKnownHostsFile=${KNOWN_HOSTS}"
-ansible-playbook ${ANSIBLE_CUSTOM_ARGS:-} -e "ansible_python_interpreter=/usr/bin/python3 home_dir=/home/${HOST_USER}" --inventory localhost, --user "${HOST_USER}" --private-key="${KEY_FILE}" /etc/app/container-security-101.yml | tee -a "${LOG_FILE}"
+ansible-playbook ${ANSIBLE_CUSTOM_ARGS:-} -e "ansible_python_interpreter=/usr/bin/python3 home_dir=/home/${HOST_USER} host_user=${HOST_USER}" --inventory localhost, --user "${HOST_USER}" --private-key="${KEY_FILE}" /etc/app/container-security-101.yml | tee -a "${LOG_FILE}"

@@ -36,7 +36,7 @@ else
 
   AUTHORIZED_KEYS="${HOST_HOME_DIR}/.ssh/authorized_keys"
   cat "${KEY_FILE}.pub" >> "${AUTHORIZED_KEYS}"
-  echo "Updated ${HOME}/.ssh/AUTHORIZED_KEYS" | tee -a "${LOG_FILE}"
+  echo "Updated ${AUTHORIZED_KEYS}" | tee -a "${LOG_FILE}"
 
   ssh-keyscan localhost 2>/dev/null >> "${KNOWN_HOSTS}"
   echo "Updated ${KNOWN_HOSTS}" | tee -a "${LOG_FILE}"

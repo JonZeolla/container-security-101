@@ -5,7 +5,7 @@
 Run the lab setup container, and you should be good to go!
 
 ```bash
-docker run --network host -v /:/host jonzeolla/labs:policy-as-code
+docker run --network host -v /:/host jonzeolla/labs:container-security-101
 ```
 
 ## Customizing

@@ -66,10 +66,12 @@ jobs:
         run: task -v sbom
         env:
           PLATFORM: all
+      - name: Set env var for unique artifact uploads
+        run: echo SANITIZED_PLATFORM="$(echo "${{ matrix.platform }}" | sed 's/\//_/g')" >> $GITHUB_ENV
       - name: Upload the SBOMs to GitHub
         uses: actions/upload-artifact@v4
         with:
-          name: SBOM-${{ matrix.platform }}
+          name: SBOM-${{ env.SANITIZED_PLATFORM }}
           path: sbom.*.json
           if-no-files-found: error
       - name: Generate vuln scan results
@@ -79,7 +81,7 @@ jobs:
       - name: Upload the vuln scan results to GitHub
         uses: actions/upload-artifact@v4
         with:
-          name: Vulns-${{ matrix.platform }}
+          name: Vulns-${{ env.SANITIZED_PLATFORM }}
           path: vulns.*.json
           if-no-files-found: error
       - name: Push the release commit

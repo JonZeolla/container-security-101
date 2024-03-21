@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.AUTOMATION_PAT }}
           fetch-depth: 0
@@ -30,12 +30,12 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.python_version }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.local/share/virtualenvs
           key: ${{ runner.os }}-python-${{ env.python_version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
       - name: Install Task
-        uses: arduino/setup-task@v1
+        uses: arduino/setup-task@v2
       - name: Initialize the repo
         run: task -v init
       - name: Update and bump the version
@@ -66,10 +66,12 @@ jobs:
         run: task -v sbom
         env:
           PLATFORM: all
+      - name: Set env var for unique artifact uploads
+        run: echo SANITIZED_PLATFORM="$(echo "${{ matrix.platform }}" | sed 's/\//_/g')" >> $GITHUB_ENV
       - name: Upload the SBOMs to GitHub
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: SBOM
+          name: SBOM-${{ env.SANITIZED_PLATFORM }}
           path: sbom.*.json
           if-no-files-found: error
       - name: Generate vuln scan results
@@ -77,9 +79,9 @@ jobs:
         env:
           PLATFORM: all
       - name: Upload the vuln scan results to GitHub
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Vulns
+          name: Vulns-${{ env.SANITIZED_PLATFORM }}
           path: vulns.*.json
           if-no-files-found: error
       - name: Push the release commit

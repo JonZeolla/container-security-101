@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.python_version }}
       - uses: actions/cache@v4
@@ -40,7 +40,7 @@ jobs:
       - name: Initialize the repo
         run: task -v init
       - name: Set up QEMU for cross-platform emulation
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       - name: Build
         run: task -v build
         env:

@@ -33,11 +33,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
-          key: ${{ runner.os }}-${{ runner.arch }}pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pre-commit-
+            ${{ runner.os }}-${{ runner.arch }}-pre-commit-
       - name: Initialize the repo
         run: task -v init
+      - name: Lint
+        run: task -v lint
       - name: Set up QEMU for cross-platform emulation
         uses: docker/setup-qemu-action@v3
       - name: Build
@@ -53,7 +55,7 @@ jobs:
         env:
           PLATFORM: ${{ matrix.platform }}
       - name: Set env var for unique artifact uploads
-        run: echo SANITIZED_PLATFORM="$(echo "${{ matrix.platform }}" | sed 's/\//_/g')" >> $GITHUB_ENV
+        run: echo SANITIZED_PLATFORM="$(echo "${{ matrix.platform }}" | sed 's/\//_/g')" >> "${GITHUB_ENV}"
       - name: Upload the SBOMs to GitHub
         uses: actions/upload-artifact@v4
         with:

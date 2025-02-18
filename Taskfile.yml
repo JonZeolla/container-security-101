@@ -306,6 +306,7 @@ tasks:
       - uv tool upgrade --all
       - uv lock --upgrade
       - uv run pre-commit autoupdate --bleeding-edge --freeze
+      - git submodule update --remote
 
   pipeline-git-init:
     desc: Initialize git configs in the pipeline

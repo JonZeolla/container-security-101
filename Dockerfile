@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG EASY_INFRA_VERSION=2024.04.01
+ARG EASY_INFRA_VERSION=2025.01.04
 # TARGETPLATFORM is special cased by docker and doesn't need an initial ARG; if you plan to use it repeatedly you must add ARG TARGETPLATFORM between uses
 # https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
 FROM --platform=$TARGETPLATFORM seiso/easy_infra:${EASY_INFRA_VERSION}-ansible AS base

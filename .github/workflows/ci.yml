@@ -29,6 +29,13 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: Install Task
         uses: arduino/setup-task@v2
+      - name: Cache the pre-commit cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pre-commit-
       - name: Initialize the repo
         run: task -v init
       - name: Set up QEMU for cross-platform emulation

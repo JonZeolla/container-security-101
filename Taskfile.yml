@@ -37,15 +37,13 @@ vars:
 silent: true
 
 tasks:
-  init-pipenv:
-    desc: Initializes the pipenv virtual environment if Pipfile.lock changes
+  init-uv:
+    desc: Initializes uv if uv.lock changes
     internal: true
     sources:
-      - Pipfile.lock
-    preconditions:
-      - which pipenv || python -m pip install --upgrade pipenv
+      - uv.lock
     cmds:
-      - pipenv install --deploy --ignore-pipfile --dev
+      - uv sync
 
   init-submodules:
     desc: >
@@ -78,18 +76,19 @@ tasks:
   init:
     desc: Initialize the repo for local use; intended to be run after git clone
     cmds:
-      - task: init-pipenv
+      - task: init-uv
       - task: init-submodules
       - task: init-install-tools
 
   lock:
-    desc: Generate a Pipfile.lock if Pipfile changed from last run
+    desc: Update uv.lock if pyproject.toml has changed
+    internal: true
     sources:
-      - Pipfile
+      - pyproject.toml
     generates:
-      - Pipfile.lock
+      - uv.lock
     cmds:
-      - pipenv lock
+      - uv lock
 
   runner-curl-install:
     desc: Install something on a GitHub Actions runner via curl
@@ -164,7 +163,7 @@ tasks:
         sh: git tag -l
       BUILD_VERSION:
         sh: |
-          pipenv run python -c '
+          uv run python -c '
           version_string = "v{{.VERSION}}"
           repo_tags = []
           {{range $tag := .REPO_TAGS | splitLines -}}
@@ -280,9 +279,9 @@ tasks:
       # Better conditional syntax is pending https://github.com/go-task/task/issues/608
       - >
         {{if eq .VERSIONING "CalVer"}}
-          pipenv run bumpversion --config-file setup.cfg --new-version {{.RELEASE_VERSION}} unusedpart
+          uv run bumpversion --config-file setup.cfg --new-version {{.RELEASE_VERSION}} unusedpart
         {{else if eq .VERSIONING "SemVer"}}
-          pipenv run bumpversion --config-file setup.cfg {{.RELEASE_TYPE}}
+          uv run bumpversion --config-file setup.cfg {{.RELEASE_TYPE}}
         {{else}}
           echo "Invalid VERSIONING var"; exit 1
         {{end}}
@@ -303,13 +302,10 @@ tasks:
 
   update:
     desc: Update the project dev and runtime dependencies, and other misc components
-    # This is a relative path which should place us back into the calling repo, assuming this is called from a goat/Task/*/Taskfile.yml.
     cmds:
-      - task: lock
-      - git submodule update --remote
-      - >
-        docker run --rm -v "${PWD}:/usr/src/app" -w /usr/src/app python:{{.PYTHON_VERSION}}-slim /bin/bash
-        -c "python3 -m pip install --upgrade pipenv &>/dev/null && pipenv update"
+      - uv tool upgrade --all
+      - uv lock --upgrade
+      - uv run pre-commit autoupdate --bleeding-edge --freeze
 
   pipeline-git-init:
     desc: Initialize git configs in the pipeline
@@ -347,7 +343,7 @@ tasks:
         sh: git tag -l
       BUILD_VERSION:
         sh: |
-          pipenv run python -c '
+          uv run python -c '
           version_string = "v{{.VERSION}}"
           repo_tags = []
           {{range $tag := .REPO_TAGS | splitLines -}}
@@ -404,7 +400,7 @@ tasks:
         sh: git tag -l
       BUILD_VERSION:
         sh: |
-          pipenv run python -c '
+          uv run python -c '
           version_string = "v{{.VERSION}}"
           repo_tags = []
           {{range $tag := .REPO_TAGS | splitLines -}}

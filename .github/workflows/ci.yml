@@ -38,6 +38,8 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-pre-commit-
       - name: Initialize the repo
         run: task -v init
+      - name: Lint
+        run: task -v lint
       - name: Set up QEMU for cross-platform emulation
         uses: docker/setup-qemu-action@v3
       - name: Build

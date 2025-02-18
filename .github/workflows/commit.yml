@@ -6,9 +6,6 @@ on:  # yamllint disable-line rule:truthy
     branches:
       - main
 
-env:
-  python_version: "3.12"
-
 defaults:
   run:
     shell: 'bash --noprofile --norc -Eeuo pipefail {0}'
@@ -26,14 +23,8 @@ jobs:
         with:
           token: ${{ secrets.AUTOMATION_PAT }}
           fetch-depth: 0
-      - name: Setup python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.python_version }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-python-${{ env.python_version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
       - name: Install Task
         uses: arduino/setup-task@v2
       - name: Initialize the repo
